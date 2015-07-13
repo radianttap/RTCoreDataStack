@@ -9,6 +9,17 @@
 @import Foundation;
 @import CoreData;
 
+typedef void (^InitCallbackBlock)(void);
+
 @interface RTCoreDataManager : NSObject
+
+@property (strong, readonly) NSManagedObjectContext *managedObjectContext;
+
+- (instancetype)initWithCallback:(InitCallbackBlock)callback;
+- (instancetype)initWithDataModel:(NSString *)dataModelName callback:(InitCallbackBlock)callback;
+
+
+
+- (void)save;
 
 @end

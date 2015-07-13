@@ -12,20 +12,9 @@
 		D03AB3901B540D2E00FE1CF6 /* Core_Data_Stack_Demo.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = D03AB38E1B540D2E00FE1CF6 /* Core_Data_Stack_Demo.xcdatamodeld */; };
 		D03AB3931B540D2E00FE1CF6 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D03AB3921B540D2E00FE1CF6 /* ViewController.m */; };
 		D03AB3981B540D2E00FE1CF6 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D03AB3971B540D2E00FE1CF6 /* Images.xcassets */; };
-		D03AB39B1B540D2E00FE1CF6 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = D03AB3991B540D2E00FE1CF6 /* LaunchScreen.xib */; };
-		D03AB3A71B540D2E00FE1CF6 /* Core_Data_Stack_DemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D03AB3A61B540D2E00FE1CF6 /* Core_Data_Stack_DemoTests.m */; };
 		D03AB3B31B540F4A00FE1CF6 /* RTCoreDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D03AB3B21B540F4A00FE1CF6 /* RTCoreDataManager.m */; };
+		D03AB3B71B54196700FE1CF6 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = D03AB3991B540D2E00FE1CF6 /* LaunchScreen.xib */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		D03AB3A11B540D2E00FE1CF6 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D03AB37C1B540D2E00FE1CF6 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = D03AB3831B540D2E00FE1CF6;
-			remoteInfo = "Core Data Stack Demo";
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		D03AB3841B540D2E00FE1CF6 /* RTCoreDataStack.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RTCoreDataStack.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -38,22 +27,12 @@
 		D03AB3921B540D2E00FE1CF6 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		D03AB3971B540D2E00FE1CF6 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		D03AB39A1B540D2E00FE1CF6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
-		D03AB3A01B540D2E00FE1CF6 /* RTCoreDataStackTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RTCoreDataStackTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		D03AB3A51B540D2E00FE1CF6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		D03AB3A61B540D2E00FE1CF6 /* Core_Data_Stack_DemoTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Core_Data_Stack_DemoTests.m; sourceTree = "<group>"; };
 		D03AB3B11B540F4A00FE1CF6 /* RTCoreDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RTCoreDataManager.h; sourceTree = "<group>"; };
 		D03AB3B21B540F4A00FE1CF6 /* RTCoreDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RTCoreDataManager.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		D03AB3811B540D2E00FE1CF6 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D03AB39D1B540D2E00FE1CF6 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -68,7 +47,6 @@
 			children = (
 				D03AB3B01B540EBD00FE1CF6 /* RTCoreDataStack */,
 				D03AB3861B540D2E00FE1CF6 /* Core Data Stack Demo */,
-				D03AB3A31B540D2E00FE1CF6 /* Core Data Stack DemoTests */,
 				D03AB3851B540D2E00FE1CF6 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -77,7 +55,6 @@
 			isa = PBXGroup;
 			children = (
 				D03AB3841B540D2E00FE1CF6 /* RTCoreDataStack.app */,
-				D03AB3A01B540D2E00FE1CF6 /* RTCoreDataStackTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -102,23 +79,6 @@
 			children = (
 				D03AB3881B540D2E00FE1CF6 /* Info.plist */,
 				D03AB3891B540D2E00FE1CF6 /* main.m */,
-			);
-			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		D03AB3A31B540D2E00FE1CF6 /* Core Data Stack DemoTests */ = {
-			isa = PBXGroup;
-			children = (
-				D03AB3A61B540D2E00FE1CF6 /* Core_Data_Stack_DemoTests.m */,
-				D03AB3A41B540D2E00FE1CF6 /* Supporting Files */,
-			);
-			path = "Core Data Stack DemoTests";
-			sourceTree = "<group>";
-		};
-		D03AB3A41B540D2E00FE1CF6 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				D03AB3A51B540D2E00FE1CF6 /* Info.plist */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -152,24 +112,6 @@
 			productReference = D03AB3841B540D2E00FE1CF6 /* RTCoreDataStack.app */;
 			productType = "com.apple.product-type.application";
 		};
-		D03AB39F1B540D2E00FE1CF6 /* RTCoreDataStackTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = D03AB3AD1B540D2E00FE1CF6 /* Build configuration list for PBXNativeTarget "RTCoreDataStackTests" */;
-			buildPhases = (
-				D03AB39C1B540D2E00FE1CF6 /* Sources */,
-				D03AB39D1B540D2E00FE1CF6 /* Frameworks */,
-				D03AB39E1B540D2E00FE1CF6 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				D03AB3A21B540D2E00FE1CF6 /* PBXTargetDependency */,
-			);
-			name = RTCoreDataStackTests;
-			productName = "Core Data Stack DemoTests";
-			productReference = D03AB3A01B540D2E00FE1CF6 /* RTCoreDataStackTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -182,10 +124,6 @@
 				TargetAttributes = {
 					D03AB3831B540D2E00FE1CF6 = {
 						CreatedOnToolsVersion = 6.4;
-					};
-					D03AB39F1B540D2E00FE1CF6 = {
-						CreatedOnToolsVersion = 6.4;
-						TestTargetID = D03AB3831B540D2E00FE1CF6;
 					};
 				};
 			};
@@ -203,7 +141,6 @@
 			projectRoot = "";
 			targets = (
 				D03AB3831B540D2E00FE1CF6 /* RTCoreDataStack */,
-				D03AB39F1B540D2E00FE1CF6 /* RTCoreDataStackTests */,
 			);
 		};
 /* End PBXProject section */
@@ -213,15 +150,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D03AB39B1B540D2E00FE1CF6 /* LaunchScreen.xib in Resources */,
+				D03AB3B71B54196700FE1CF6 /* LaunchScreen.xib in Resources */,
 				D03AB3981B540D2E00FE1CF6 /* Images.xcassets in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D03AB39E1B540D2E00FE1CF6 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -240,23 +170,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		D03AB39C1B540D2E00FE1CF6 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				D03AB3A71B540D2E00FE1CF6 /* Core_Data_Stack_DemoTests.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		D03AB3A21B540D2E00FE1CF6 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = D03AB3831B540D2E00FE1CF6 /* RTCoreDataStack */;
-			targetProxy = D03AB3A11B540D2E00FE1CF6 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		D03AB3991B540D2E00FE1CF6 /* LaunchScreen.xib */ = {
@@ -372,40 +286,6 @@
 			};
 			name = Release;
 		};
-		D03AB3AE1B540D2E00FE1CF6 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = "Core Data Stack DemoTests/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_NAME = RTCoreDataStackTests;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Core Data Stack Demo.app/Core Data Stack Demo";
-			};
-			name = Debug;
-		};
-		D03AB3AF1B540D2E00FE1CF6 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = "Core Data Stack DemoTests/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_NAME = RTCoreDataStackTests;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Core Data Stack Demo.app/Core Data Stack Demo";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -423,15 +303,6 @@
 			buildConfigurations = (
 				D03AB3AB1B540D2E00FE1CF6 /* Debug */,
 				D03AB3AC1B540D2E00FE1CF6 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		D03AB3AD1B540D2E00FE1CF6 /* Build configuration list for PBXNativeTarget "RTCoreDataStackTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				D03AB3AE1B540D2E00FE1CF6 /* Debug */,
-				D03AB3AF1B540D2E00FE1CF6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
