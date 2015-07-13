@@ -14,6 +14,7 @@
 		D03AB3981B540D2E00FE1CF6 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D03AB3971B540D2E00FE1CF6 /* Images.xcassets */; };
 		D03AB39B1B540D2E00FE1CF6 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = D03AB3991B540D2E00FE1CF6 /* LaunchScreen.xib */; };
 		D03AB3A71B540D2E00FE1CF6 /* Core_Data_Stack_DemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D03AB3A61B540D2E00FE1CF6 /* Core_Data_Stack_DemoTests.m */; };
+		D03AB3B31B540F4A00FE1CF6 /* RTCoreDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D03AB3B21B540F4A00FE1CF6 /* RTCoreDataManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -27,7 +28,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		D03AB3841B540D2E00FE1CF6 /* Core Data Stack Demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Core Data Stack Demo.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D03AB3841B540D2E00FE1CF6 /* RTCoreDataStack.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RTCoreDataStack.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D03AB3881B540D2E00FE1CF6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D03AB3891B540D2E00FE1CF6 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		D03AB38B1B540D2E00FE1CF6 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -37,9 +38,11 @@
 		D03AB3921B540D2E00FE1CF6 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		D03AB3971B540D2E00FE1CF6 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		D03AB39A1B540D2E00FE1CF6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
-		D03AB3A01B540D2E00FE1CF6 /* Core Data Stack DemoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Core Data Stack DemoTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D03AB3A01B540D2E00FE1CF6 /* RTCoreDataStackTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RTCoreDataStackTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D03AB3A51B540D2E00FE1CF6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D03AB3A61B540D2E00FE1CF6 /* Core_Data_Stack_DemoTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Core_Data_Stack_DemoTests.m; sourceTree = "<group>"; };
+		D03AB3B11B540F4A00FE1CF6 /* RTCoreDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RTCoreDataManager.h; sourceTree = "<group>"; };
+		D03AB3B21B540F4A00FE1CF6 /* RTCoreDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RTCoreDataManager.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,8 +76,8 @@
 		D03AB3851B540D2E00FE1CF6 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D03AB3841B540D2E00FE1CF6 /* Core Data Stack Demo.app */,
-				D03AB3A01B540D2E00FE1CF6 /* Core Data Stack DemoTests.xctest */,
+				D03AB3841B540D2E00FE1CF6 /* RTCoreDataStack.app */,
+				D03AB3A01B540D2E00FE1CF6 /* RTCoreDataStackTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -123,6 +126,8 @@
 		D03AB3B01B540EBD00FE1CF6 /* RTCoreDataStack */ = {
 			isa = PBXGroup;
 			children = (
+				D03AB3B11B540F4A00FE1CF6 /* RTCoreDataManager.h */,
+				D03AB3B21B540F4A00FE1CF6 /* RTCoreDataManager.m */,
 			);
 			path = RTCoreDataStack;
 			sourceTree = "<group>";
@@ -130,9 +135,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		D03AB3831B540D2E00FE1CF6 /* Core Data Stack Demo */ = {
+		D03AB3831B540D2E00FE1CF6 /* RTCoreDataStack */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D03AB3AA1B540D2E00FE1CF6 /* Build configuration list for PBXNativeTarget "Core Data Stack Demo" */;
+			buildConfigurationList = D03AB3AA1B540D2E00FE1CF6 /* Build configuration list for PBXNativeTarget "RTCoreDataStack" */;
 			buildPhases = (
 				D03AB3801B540D2E00FE1CF6 /* Sources */,
 				D03AB3811B540D2E00FE1CF6 /* Frameworks */,
@@ -142,14 +147,14 @@
 			);
 			dependencies = (
 			);
-			name = "Core Data Stack Demo";
+			name = RTCoreDataStack;
 			productName = "Core Data Stack Demo";
-			productReference = D03AB3841B540D2E00FE1CF6 /* Core Data Stack Demo.app */;
+			productReference = D03AB3841B540D2E00FE1CF6 /* RTCoreDataStack.app */;
 			productType = "com.apple.product-type.application";
 		};
-		D03AB39F1B540D2E00FE1CF6 /* Core Data Stack DemoTests */ = {
+		D03AB39F1B540D2E00FE1CF6 /* RTCoreDataStackTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D03AB3AD1B540D2E00FE1CF6 /* Build configuration list for PBXNativeTarget "Core Data Stack DemoTests" */;
+			buildConfigurationList = D03AB3AD1B540D2E00FE1CF6 /* Build configuration list for PBXNativeTarget "RTCoreDataStackTests" */;
 			buildPhases = (
 				D03AB39C1B540D2E00FE1CF6 /* Sources */,
 				D03AB39D1B540D2E00FE1CF6 /* Frameworks */,
@@ -160,9 +165,9 @@
 			dependencies = (
 				D03AB3A21B540D2E00FE1CF6 /* PBXTargetDependency */,
 			);
-			name = "Core Data Stack DemoTests";
+			name = RTCoreDataStackTests;
 			productName = "Core Data Stack DemoTests";
-			productReference = D03AB3A01B540D2E00FE1CF6 /* Core Data Stack DemoTests.xctest */;
+			productReference = D03AB3A01B540D2E00FE1CF6 /* RTCoreDataStackTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -171,6 +176,7 @@
 		D03AB37C1B540D2E00FE1CF6 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				CLASSPREFIX = RT;
 				LastUpgradeCheck = 0640;
 				ORGANIZATIONNAME = "Radiant Tap";
 				TargetAttributes = {
@@ -183,7 +189,7 @@
 					};
 				};
 			};
-			buildConfigurationList = D03AB37F1B540D2E00FE1CF6 /* Build configuration list for PBXProject "Core Data Stack Demo" */;
+			buildConfigurationList = D03AB37F1B540D2E00FE1CF6 /* Build configuration list for PBXProject "RTCoreDataStack" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -196,8 +202,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				D03AB3831B540D2E00FE1CF6 /* Core Data Stack Demo */,
-				D03AB39F1B540D2E00FE1CF6 /* Core Data Stack DemoTests */,
+				D03AB3831B540D2E00FE1CF6 /* RTCoreDataStack */,
+				D03AB39F1B540D2E00FE1CF6 /* RTCoreDataStackTests */,
 			);
 		};
 /* End PBXProject section */
@@ -227,6 +233,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D03AB3901B540D2E00FE1CF6 /* Core_Data_Stack_Demo.xcdatamodeld in Sources */,
+				D03AB3B31B540F4A00FE1CF6 /* RTCoreDataManager.m in Sources */,
 				D03AB38D1B540D2E00FE1CF6 /* AppDelegate.m in Sources */,
 				D03AB3931B540D2E00FE1CF6 /* ViewController.m in Sources */,
 				D03AB38A1B540D2E00FE1CF6 /* main.m in Sources */,
@@ -246,7 +253,7 @@
 /* Begin PBXTargetDependency section */
 		D03AB3A21B540D2E00FE1CF6 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = D03AB3831B540D2E00FE1CF6 /* Core Data Stack Demo */;
+			target = D03AB3831B540D2E00FE1CF6 /* RTCoreDataStack */;
 			targetProxy = D03AB3A11B540D2E00FE1CF6 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -351,7 +358,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = "Core Data Stack Demo/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = RTCoreDataStack;
 			};
 			name = Debug;
 		};
@@ -361,7 +368,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = "Core Data Stack Demo/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = RTCoreDataStack;
 			};
 			name = Release;
 		};
@@ -379,7 +386,7 @@
 				);
 				INFOPLIST_FILE = "Core Data Stack DemoTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = RTCoreDataStackTests;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Core Data Stack Demo.app/Core Data Stack Demo";
 			};
 			name = Debug;
@@ -394,7 +401,7 @@
 				);
 				INFOPLIST_FILE = "Core Data Stack DemoTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = RTCoreDataStackTests;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Core Data Stack Demo.app/Core Data Stack Demo";
 			};
 			name = Release;
@@ -402,7 +409,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		D03AB37F1B540D2E00FE1CF6 /* Build configuration list for PBXProject "Core Data Stack Demo" */ = {
+		D03AB37F1B540D2E00FE1CF6 /* Build configuration list for PBXProject "RTCoreDataStack" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D03AB3A81B540D2E00FE1CF6 /* Debug */,
@@ -411,7 +418,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D03AB3AA1B540D2E00FE1CF6 /* Build configuration list for PBXNativeTarget "Core Data Stack Demo" */ = {
+		D03AB3AA1B540D2E00FE1CF6 /* Build configuration list for PBXNativeTarget "RTCoreDataStack" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D03AB3AB1B540D2E00FE1CF6 /* Debug */,
@@ -420,7 +427,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D03AB3AD1B540D2E00FE1CF6 /* Build configuration list for PBXNativeTarget "Core Data Stack DemoTests" */ = {
+		D03AB3AD1B540D2E00FE1CF6 /* Build configuration list for PBXNativeTarget "RTCoreDataStackTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D03AB3AE1B540D2E00FE1CF6 /* Debug */,
