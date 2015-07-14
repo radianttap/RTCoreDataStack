@@ -8,8 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
+@class RTCoreDataManager;
+
 @interface ViewController : UIViewController
 
+@property (nonatomic, strong) RTCoreDataManager *coreDataManager;
 
 @end
 

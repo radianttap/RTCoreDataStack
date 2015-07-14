@@ -12,6 +12,7 @@
 
 @property (strong, readwrite) NSManagedObjectContext *managedObjectContext;
 @property (strong) NSManagedObjectContext *privateContext;
+@property (readwrite, getter=isReady) BOOL ready;
 
 @property (copy) InitCallbackBlock initCallback;
 
@@ -23,7 +24,8 @@
 
 	if (!(self = [super init])) return nil;
 
-	self.initCallback = callback;
+	_ready = NO;
+	_initCallback = callback;
 
 	//	will merge all models in the bundle
 	NSManagedObjectModel *model = [self managedObjectModelNamed:nil];
@@ -39,7 +41,8 @@
 
 	if (!(self = [super init])) return nil;
 
-	self.initCallback = callback;
+	_ready = NO;
+	_initCallback = callback;
 
 	NSManagedObjectModel *model = [self managedObjectModelNamed:dataModelName];
 	[self initializeCoreDataWithModel:model];
@@ -99,6 +102,35 @@
 	}];
 }
 
+- (void)saveWithCallback:(void(^)(BOOL success, NSError *error))callback {
+	if (![self.privateContext hasChanges] && ![self.managedObjectContext hasChanges]) {
+		if (callback)
+			callback(YES, nil);
+		return;
+	}
+
+	[self.managedObjectContext performBlockAndWait:^{
+		NSError *error = nil;
+
+		BOOL success = [self.managedObjectContext save:&error];
+		if (!success || error) {
+			if (callback)
+				callback(success, error);
+			return;
+		}
+
+		[self.privateContext performBlock:^{
+			NSError *privateError = nil;
+			BOOL privateSuccess = [self.privateContext save:&privateError];
+			if (!privateSuccess || privateError) {
+				if (callback)
+					callback(privateSuccess, privateError);
+				return;
+			}
+		}];
+	}];
+}
+
 
 #pragma mark - Private 
 
@@ -119,7 +151,10 @@
 }
 
 - (void)initializeCoreDataWithModel:(NSManagedObjectModel *)mom {
-	if (self.managedObjectContext) return;
+	if (self.managedObjectContext) {
+		self.ready = YES;
+		return;
+	}
 
 	NSAssert(mom, @"%@:%@ No model to generate a store from", [self class], NSStringFromSelector(_cmd));
 
@@ -159,6 +194,7 @@
 										   error:&error],
 				 @"Error initializing PSC:\n%@", error);
 
+		self.ready = YES;
 		if (!self.initCallback) return;
 
 		dispatch_sync(dispatch_get_main_queue(), ^{
@@ -186,8 +222,8 @@
 		return;
 	}
 
+	// check if this is from current database
 	if (![self.privateContext.persistentStoreCoordinator isEqual:savedContext.persistentStoreCoordinator]) {
-		// that's another database
 		return;
 	}
 

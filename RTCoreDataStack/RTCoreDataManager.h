@@ -14,6 +14,7 @@ typedef void (^InitCallbackBlock)(void);
 @interface RTCoreDataManager : NSObject
 
 @property (strong, readonly) NSManagedObjectContext *managedObjectContext;
+@property (readonly, getter=isReady) BOOL ready;
 
 //	init
 - (instancetype)initWithCallback:(InitCallbackBlock)callback;
@@ -25,5 +26,6 @@ typedef void (^InitCallbackBlock)(void);
 
 //	actions
 - (void)save;
+- (void)saveWithCallback:(void(^)(BOOL success, NSError *error))callback;
 
 @end
