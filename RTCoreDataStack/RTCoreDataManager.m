@@ -63,10 +63,23 @@
 #pragma mark - Public
 
 //	this creates private MOC, directly attached to PSC
-- (NSManagedObjectContext *)siblingManagedObjectContext {
+//	use it for background imports
+- (NSManagedObjectContext *)importerManagedObjectContext {
 
 	NSManagedObjectContext *moc = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+	moc.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy;	//	this means that objects in the MOC will override those in the store
 	moc.persistentStoreCoordinator = self.privateContext.persistentStoreCoordinator;
+
+	return moc;
+}
+
+//	this creates child MOC for the main MOC
+//	use it to create new objects to add into (say add new person into Address Book, new document etc)
+- (NSManagedObjectContext *)creatorManagedObjectContext {
+
+	NSManagedObjectContext *moc = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+	moc.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy;	//	this means that objects in this MOC will override those in the parent (main) MOC
+	moc.parentContext = self.managedObjectContext;
 
 	return moc;
 }
@@ -115,10 +128,12 @@
 
 	//	private MOC, will be used to actualy write stuff to disk
 	self.privateContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+	self.privateContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;	//	this means that store takes precedence when resolving conflicts
 	self.privateContext.persistentStoreCoordinator = coordinator;
 
 	//	main MOC, child of private one, to be used by main thread, for UI & rest
 	self.managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+	self.managedObjectContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;	//	this means that parent context takes precedence when resolving conflicts
 	self.managedObjectContext.parentContext = self.privateContext;
 
 	//	create / connect with the store on the disk

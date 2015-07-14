@@ -20,7 +20,8 @@ typedef void (^InitCallbackBlock)(void);
 - (instancetype)initWithDataModel:(NSString *)dataModelName callback:(InitCallbackBlock)callback;
 
 //	helpers
-- (NSManagedObjectContext *)siblingManagedObjectContext;
+- (NSManagedObjectContext *)importerManagedObjectContext;
+- (NSManagedObjectContext *)creatorManagedObjectContext;
 
 //	actions
 - (void)save;
