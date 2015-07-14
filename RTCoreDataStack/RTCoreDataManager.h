@@ -15,11 +15,14 @@ typedef void (^InitCallbackBlock)(void);
 
 @property (strong, readonly) NSManagedObjectContext *managedObjectContext;
 
+//	init
 - (instancetype)initWithCallback:(InitCallbackBlock)callback;
 - (instancetype)initWithDataModel:(NSString *)dataModelName callback:(InitCallbackBlock)callback;
 
+//	helpers
+- (NSManagedObjectContext *)siblingManagedObjectContext;
 
-
+//	actions
 - (void)save;
 
 @end

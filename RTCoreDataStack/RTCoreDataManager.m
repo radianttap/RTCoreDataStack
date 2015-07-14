@@ -25,12 +25,11 @@
 
 	self.initCallback = callback;
 
-	//	figure out the .momd file name
-	NSArray *bundleDataModels = [[NSBundle mainBundle] pathsForResourcesOfType:@"momd" inDirectory:nil];
-	NSAssert([bundleDataModels count] == 1, @"%@:%@ Found multiple data models, please use initWithDataModel:callback: to specify which one to use", [self class], NSStringFromSelector(_cmd));
-	NSString *dataModelName = [[[bundleDataModels firstObject] lastPathComponent] stringByDeletingPathExtension];
-	NSAssert([dataModelName length] > 0, @"%@:%@ Failed to extract data model name, please use initWithDataModel:callback: to specify it", [self class], NSStringFromSelector(_cmd));
-	[self initializeCoreDataWithDataModel:dataModelName];
+	//	will merge all models in the bundle
+	NSManagedObjectModel *model = [self managedObjectModelNamed:nil];
+	[self initializeCoreDataWithModel:model];
+
+	[self commonInit];
 
 	return self;
 }
@@ -41,16 +40,74 @@
 	if (!(self = [super init])) return nil;
 
 	self.initCallback = callback;
-	[self initializeCoreDataWithDataModel:dataModelName];
+
+	NSManagedObjectModel *model = [self managedObjectModelNamed:dataModelName];
+	[self initializeCoreDataWithModel:model];
+
+	[self commonInit];
 
 	return self;
 }
 
-- (void)initializeCoreDataWithDataModel:(NSString *)dataModelName {
+- (void)commonInit {
+
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleMOCNotification:) name:NSManagedObjectContextDidSaveNotification object:nil];
+}
+
+- (void)dealloc {
+
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+
+#pragma mark - Public
+
+//	this creates private MOC, directly attached to PSC
+- (NSManagedObjectContext *)siblingManagedObjectContext {
+
+	NSManagedObjectContext *moc = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+	moc.persistentStoreCoordinator = self.privateContext.persistentStoreCoordinator;
+
+	return moc;
+}
+
+- (void)save {
+	if (![self.privateContext hasChanges] && ![self.managedObjectContext hasChanges]) return;
+
+	[self.managedObjectContext performBlockAndWait:^{
+		NSError *error = nil;
+
+		NSAssert([self.managedObjectContext save:&error], @"Failed to save main context:\n%@", error);
+
+		[self.privateContext performBlock:^{
+			NSError *privateError = nil;
+			NSAssert([self.privateContext save:&privateError], @"Error saving private context:\n%@", privateError);
+		}];
+	}];
+}
+
+
+#pragma mark - Private 
+
+- (NSManagedObjectModel *)managedObjectModelNamed:(NSString *)dataModelName {
+
+	NSManagedObjectModel *mom = nil;
+
+	if ([dataModelName length] == 0) {
+		//	nothing specified, merge all data models found in the store
+		[NSManagedObjectModel mergedModelFromBundles:@[[NSBundle mainBundle]]];
+
+	} else {
+		NSURL *modelURL = [[NSBundle mainBundle] URLForResource:dataModelName withExtension:@"momd"];
+		mom = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
+	}
+
+	return mom;
+}
+
+- (void)initializeCoreDataWithModel:(NSManagedObjectModel *)mom {
 	if (self.managedObjectContext) return;
 
-	NSURL *modelURL = [[NSBundle mainBundle] URLForResource:dataModelName withExtension:@"momd"];
-	NSManagedObjectModel *mom = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
 	NSAssert(mom, @"%@:%@ No model to generate a store from", [self class], NSStringFromSelector(_cmd));
 
 	NSPersistentStoreCoordinator *coordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:mom];
@@ -72,11 +129,12 @@
 								  NSMigratePersistentStoresAutomaticallyOption: @(YES),
 								  NSInferMappingModelAutomaticallyOption: @(YES),
 								  NSSQLitePragmasOption: @{ @"journal_mode":@"DELETE" }
-								 };
+								  };
 
 		NSFileManager *fileManager = [NSFileManager defaultManager];
 		NSURL *documentsURL = [[fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
-		NSURL *storeURL = [documentsURL URLByAppendingPathComponent:[NSString stringWithFormat:@"%@.sqlite", dataModelName]];
+		NSString *cleanAppName = [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"] stringByTrimmingCharactersInSet:[[NSCharacterSet alphanumericCharacterSet] invertedSet]];
+		NSURL *storeURL = [documentsURL URLByAppendingPathComponent:[NSString stringWithFormat:@"%@.sqlite", cleanAppName]];
 
 		NSError *error = nil;
 		NSAssert([psc addPersistentStoreWithType:NSSQLiteStoreType
@@ -94,25 +152,38 @@
 	});
 }
 
+- (void)handleMOCNotification:(NSNotification *)notification {
 
-- (void)save {
-	if (![self.privateContext hasChanges] && ![self.managedObjectContext hasChanges]) return;
+	NSManagedObjectContext *savedContext = [notification object];
 
-	[self.managedObjectContext performBlockAndWait:^{
-		NSError *error = nil;
+	// ignore change notifications from the main MOC
+	if ([self.managedObjectContext isEqual:savedContext]) {
+		return;
+	}
 
-		NSAssert([self.managedObjectContext save:&error], @"Failed to save main context:\n%@", error);
+	// ignore change notifications from the direct child MOC
+	if ([self.managedObjectContext isEqual:savedContext.parentContext]) {
+		return;
+	}
 
-		[self.privateContext performBlock:^{
-			NSError *privateError = nil;
-			NSAssert([self.privateContext save:&privateError], @"Error saving private context:\n%@", privateError);
-		}];
-	}];
+	// ignore change notifications from the parent MOC
+	if ([self.managedObjectContext.parentContext isEqual:savedContext]) {
+		return;
+	}
+
+	if (![self.privateContext.persistentStoreCoordinator isEqual:savedContext.persistentStoreCoordinator]) {
+		// that's another database
+		return;
+	}
+
+	NSArray *inserted = [notification.userInfo objectForKey:NSInsertedObjectsKey];
+	NSArray *updated = [notification.userInfo objectForKey:NSUpdatedObjectsKey];
+	NSArray *deleted = [notification.userInfo objectForKey:NSDeletedObjectsKey];
+	if ([inserted count] == 0 && [updated count] == 0 && [deleted count] == 0) return;
+
+	[self.managedObjectContext performSelectorOnMainThread:@selector(mergeChangesFromContextDidSaveNotification:)
+															  withObject:notification
+														   waitUntilDone:YES];
 }
-
-
-#pragma mark - Private 
-
-
 
 @end
