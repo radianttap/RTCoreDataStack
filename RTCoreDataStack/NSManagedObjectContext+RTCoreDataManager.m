@@ -1,4 +1,10 @@
 /*
+ NSManagedObjectContext+RTCoreDataManager.m
+ Radiant Tap Essentials
+
+ Created by Aleksandar Vacić on 11.2.15.
+ Copyright (c) 2015. Radiant Tap. All rights reserved.
+
  Licensed under the MIT License
 
  Copyright (c) 2015 Aleksandar Vacić, RadiantTap.com
@@ -26,41 +32,66 @@
 
 @implementation NSManagedObjectContext (RTCoreDataManager)
 
+/**
+ *	IMPORTANT: Until this notice is removed, consider this method very lightly tested
+ *	Works well for main=parent / creator=child MOC combination. Other uses not tested in real life situation.
+ */
 - (void)saveWithCallback:(void(^)(BOOL success, NSError *error))callback {
 
 	if (![self hasChanges]) {
-		NSLog(@"D | %@:%@/%@ Main MOC has no changes to save", [self class], NSStringFromSelector(_cmd), @(__LINE__));
+		NSLog(@"D | %@:%@/%@ MOC has no changes to save", [self class], NSStringFromSelector(_cmd), @(__LINE__));
 		if (callback)
 			callback(YES, nil);
 		return;
 	}
 
-	//	performBlock* makes sure that anything inside is executed on the receiver's thread
-	[self performBlockAndWait:^{
-		NSError *error = nil;
+	if (self.concurrencyType == NSPrivateQueueConcurrencyType) {
 
-		BOOL success = [self save:&error];
-		if (!success || error) {
-			NSLog(@"E | %@:%@/%@ Main MOC save failed with error\n%@", [self class], NSStringFromSelector(_cmd), @(__LINE__), error);
-			if (callback)
-				callback(success, error);
-			return;
-		}
+		[self performBlockAndWait:^{
+			NSError *error = nil;
 
-		if (callback)
-			callback(YES, nil);
-
-		//	if there's parent Context, then save it asynchronously on its thread
-		if (!self.parentContext) return;
-
-		[self.parentContext performBlock:^{
-			NSError *privateError = nil;
-			BOOL privateSuccess = [self.parentContext save:&privateError];
-			if (!privateSuccess || privateError) {
-				NSLog(@"E | %@:%@/%@ Private MOC save failed with error\n%@", [self class], NSStringFromSelector(_cmd), @(__LINE__), privateError);
+			BOOL success = [self save:&error];
+			if (!success || error) {
+				NSLog(@"E | %@:%@/%@ MOC save failed with error\n%@", [self class], NSStringFromSelector(_cmd), @(__LINE__), error);
+				if (callback)
+					callback(success, error);
+				return;
 			}
+
+			if (self.parentContext) {
+				[self.parentContext saveWithCallback:callback];
+				return;
+			}
+
+			if (callback)
+				callback(YES, nil);
 		}];
-	}];
+
+	} else {
+		//	performBlockAndWait: is a sync call and should not be used on main thread
+		//	so falling back to async call
+		//	(same goes for older thread confinement MOC, which you should not be using anw)
+
+		[self performBlock:^{
+			NSError *error = nil;
+
+			BOOL success = [self save:&error];
+			if (!success || error) {
+				NSLog(@"E | %@:%@/%@ MOC save failed with error\n%@", [self class], NSStringFromSelector(_cmd), @(__LINE__), error);
+				if (callback)
+					callback(success, error);
+				return;
+			}
+
+			if (self.parentContext) {
+				[self.parentContext saveWithCallback:callback];
+				return;
+			}
+
+			if (callback)
+				callback(YES, nil);
+		}];
+	}
 }
 
 @end

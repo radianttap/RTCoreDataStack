@@ -1,4 +1,10 @@
 /*
+ RTCoreDataManager.m
+ Radiant Tap Essentials
+
+ Created by Aleksandar Vacić on 11.2.15.
+ Copyright (c) 2015. Radiant Tap. All rights reserved.
+
  Licensed under the MIT License
 
  Copyright (c) 2015 Aleksandar Vacić, RadiantTap.com
@@ -23,23 +29,23 @@
  */
 
 #import "RTCoreDataManager.h"
-#import "NSManagedObjectContext+RTCoreDataManager.h"
+
+NSString *const RTCoreDataManagerDidMergeNotification = @"RTCoreDataManagerDidMergeNotification";
 
 @interface RTCoreDataManager ()
 
-@property (strong, readwrite) NSManagedObjectContext *managedObjectContext;
-@property (strong) NSManagedObjectContext *privateContext;
-@property (readwrite, getter=isReady) BOOL ready;
+@property (readwrite, nonatomic, getter=isReady) BOOL ready;
+
+@property (nonatomic, strong, readwrite) NSManagedObjectContext *mainManagedObjectContext;
+
+@property (nonatomic, strong, readwrite) NSPersistentStoreCoordinator *mainPSC;
+@property (nonatomic, strong, readwrite) NSPersistentStoreCoordinator *writerPSC;	//	used for importerMOC, background writes
 
 @property (copy) InitCallbackBlock initCallback;
 
 @end
 
 @implementation RTCoreDataManager
-
-//	## two ways to use CDM
-//	## the only difference is here in the init, the rest is all the same
-//	1. singleton
 
 + (RTCoreDataManager *)defaultManager {
 	static RTCoreDataManager *defaultManager = nil;
@@ -49,6 +55,8 @@
 		defaultManager = [[RTCoreDataManager alloc] init];
 		defaultManager.ready = NO;
 		defaultManager.initCallback = nil;
+		defaultManager.mainMOCReadOnly = NO;
+		defaultManager.mergeIncomingSavedObjects = YES;
 	});
 
 	return defaultManager;
@@ -60,6 +68,9 @@
 
 	//	will use default store path
 	NSURL *storeURL = [RTCoreDataManager defaultStoreURL];
+	NSString *cleanAppName = [self cleanAppName];
+	storeURL = [storeURL URLByAppendingPathComponent:[NSString stringWithFormat:@"%@.sqlite", cleanAppName]];
+
 	//	will merge all models in the bundle
 	NSManagedObjectModel *model = [self managedObjectModelNamed:nil];
 	[self initializeCoreDataWithModel:model storeURL:storeURL];
@@ -73,6 +84,8 @@
 
 	//	will use default store path
 	NSURL *storeURL = [RTCoreDataManager defaultStoreURL];
+	NSString *cleanAppName = [self cleanAppName];
+	storeURL = [storeURL URLByAppendingPathComponent:[NSString stringWithFormat:@"%@.sqlite", cleanAppName]];
 
 	NSManagedObjectModel *model = [self managedObjectModelNamed:dataModelName];
 	[self initializeCoreDataWithModel:model storeURL:storeURL];
@@ -97,44 +110,43 @@
 
 	if (!(self = [super init])) return nil;
 
-	_ready = NO;
 	_initCallback = callback;
 
 	//	will use default store path
 	NSURL *storeURL = [RTCoreDataManager defaultStoreURL];
 	NSString *cleanAppName = [self cleanAppName];
 	storeURL = [storeURL URLByAppendingPathComponent:[NSString stringWithFormat:@"%@.sqlite", cleanAppName]];
+
 	//	will merge all models in the bundle
 	NSManagedObjectModel *model = [self managedObjectModelNamed:nil];
-	[self initializeCoreDataWithModel:model storeURL:storeURL];
 
-	[self commonInit];
+	[self initializeCoreDataWithModel:model storeURL:storeURL];
 
 	return self;
 }
 
 - (instancetype)initWithDataModelNamed:(NSString *)dataModelName callback:(InitCallbackBlock)callback {
 
+	_initCallback = callback;
+
 	//	will use default store path
 	NSURL *storeURL = [RTCoreDataManager defaultStoreURL];
 	NSString *cleanAppName = [self cleanAppName];
 	storeURL = [storeURL URLByAppendingPathComponent:[NSString stringWithFormat:@"%@.sqlite", cleanAppName]];
+
 	return [self initWithDataModelNamed:dataModelName storeURL:storeURL callback:callback];
 }
 
 - (instancetype)initWithDataModelNamed:(NSString *)dataModelName storeURL:(NSURL *)storeURL callback:(InitCallbackBlock)callback {
 
-	NSParameterAssert([dataModelName length] > 0);
-
+	NSAssert([dataModelName length] > 0, @"E | %@:%@/%@ Data Model name not suppilied", [self class], NSStringFromSelector(_cmd), @(__LINE__));
 	if (!(self = [super init])) return nil;
 
-	_ready = NO;
 	_initCallback = callback;
 
 	NSManagedObjectModel *model = [self managedObjectModelNamed:dataModelName];
-	[self initializeCoreDataWithModel:model storeURL:storeURL];
 
-	[self commonInit];
+	[self initializeCoreDataWithModel:model storeURL:storeURL];
 
 	return self;
 }
@@ -183,17 +195,13 @@
 }
 
 - (void)initializeCoreDataWithModel:(NSManagedObjectModel *)mom storeURL:(NSURL *)storeURL {
-	if (self.managedObjectContext) {
-		self.ready = YES;
-		return;
-	}
+
+	_ready = NO;
+	_mainMOCReadOnly = NO;
+	_mergeIncomingSavedObjects = YES;
 
 	//	is model is not supplied, give up
 	NSAssert(mom, @"E | %@:%@/%@ No model to generate a store from", [self class], NSStringFromSelector(_cmd), @(__LINE__));
-
-	//	is PSC init failed, give up
-	NSPersistentStoreCoordinator *coordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:mom];
-	NSAssert(coordinator, @"E | %@:%@/%@ Failed to initialize coordinator", [self class], NSStringFromSelector(_cmd), @(__LINE__));
 
 	//	make sure storeURL is usable URL
 	BOOL isDirectory = NO;
@@ -201,132 +209,137 @@
 	BOOL doesDirectoryExists = [[NSFileManager defaultManager] fileExistsAtPath:[directoryURL path] isDirectory:&isDirectory];
 	NSAssert(doesDirectoryExists, @"E | %@:%@/%@ StoreURL param points to non-existing directory", [self class], NSStringFromSelector(_cmd), @(__LINE__));
 
-	//	private MOC, will be used to actualy write stuff to disk
-	self.privateContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-	self.privateContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;	//	this means that store takes precedence when resolving conflicts
-	self.privateContext.persistentStoreCoordinator = coordinator;
+	//	## Persistance Store Coordinators
 
-	//	main MOC, child of private one, to be used by main thread, for UI & rest
-	self.managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
-	self.managedObjectContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;	//	this means that parent context takes precedence when resolving conflicts
-	self.managedObjectContext.parentContext = self.privateContext;
-
-	//	create / connect with the store on the disk
-	NSPersistentStoreCoordinator *psc = self.privateContext.persistentStoreCoordinator;
-
+	//	use options that allow automatic model migrations
 	NSDictionary *options = @{
 							  NSMigratePersistentStoresAutomaticallyOption: @(YES),
-							  NSInferMappingModelAutomaticallyOption: @(YES),
-							  NSSQLitePragmasOption: @{ @"journal_mode":@"DELETE" }
+							  NSInferMappingModelAutomaticallyOption: @(YES)
 							  };
+	//	block that will connect NSPSC to the store file on disk
+	void (^connectPSC)(NSPersistentStoreCoordinator *) = ^void(NSPersistentStoreCoordinator *psc) {
+		NSError *error = nil;
+		NSPersistentStore *store = [psc addPersistentStoreWithType:NSSQLiteStoreType
+													 configuration:nil
+															   URL:storeURL
+														   options:options
+															 error:&error];
+		NSAssert(store, @"E | %@:%@/%@ Error initializing PSC with a store:\n%@", [self class], NSStringFromSelector(_cmd), @(__LINE__), error);
+	};
 
-	NSError *error = nil;
-	NSAssert([psc addPersistentStoreWithType:NSSQLiteStoreType
-							   configuration:nil
-										 URL:storeURL
-									 options:options
-									   error:&error],
-			 @"E | %@:%@/%@ Error initializing PSC:\n%@", [self class], NSStringFromSelector(_cmd), @(__LINE__), error);
+	//	is mainPSC init failed, give up
+	{
+		NSPersistentStoreCoordinator *coordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:mom];
+		NSAssert(coordinator, @"E | %@:%@/%@ Failed to initialize coordinator", [self class], NSStringFromSelector(_cmd), @(__LINE__));
+		connectPSC(coordinator);
+		self.mainPSC = coordinator;
+	}
+
+	//	is writerPSC init failed, give up (should we?)
+	{
+		NSPersistentStoreCoordinator *coordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:mom];
+		NSAssert(coordinator, @"E | %@:%@/%@ Failed to initialize coordinator", [self class], NSStringFromSelector(_cmd), @(__LINE__));
+		connectPSC(coordinator);
+		self.writerPSC = coordinator;
+	}
+
+	//	main MOC
+	{
+		NSManagedObjectContext *moc = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+		moc.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;	//	this means that in case of conflicts, disk will override memory
+		moc.persistentStoreCoordinator = self.mainPSC;
+		self.mainManagedObjectContext = moc;
+	}
 
 	self.ready = YES;
 	NSLog(@"I | %@:%@/%@ Core Data initialized with storeURL = %@", [self class], NSStringFromSelector(_cmd), @(__LINE__), [storeURL path]);
 
+	[self commonInit];
+
 	if (!self.initCallback) return;
-	[self initCallback]();
+	self.initCallback();
 }
 
+/**
+ *	Listens for save notifications and merges them into mainMOC, so UI can use them
+ *
+ *	@param notification	Incoming NSManagedObjectContextDidSaveNotification notification
+ */
 - (void)handleMOCNotification:(NSNotification *)notification {
-
-	NSManagedObjectContext *savedContext = [notification object];
-
-	// ignore change notifications from the main MOC
-	if ([self.managedObjectContext isEqual:savedContext]) {
-		return;
-	}
-
-	// ignore change notifications from the direct child MOC
-	if ([self.managedObjectContext isEqual:savedContext.parentContext]) {
-		return;
-	}
-
-	// ignore change notifications from the parent MOC
-	if ([self.managedObjectContext.parentContext isEqual:savedContext]) {
-		return;
-	}
-
-	// ignore if not from current database
-	if (![self.privateContext.persistentStoreCoordinator isEqual:savedContext.persistentStoreCoordinator]) {
-		return;
-	}
 
 	NSArray *inserted = [notification.userInfo objectForKey:NSInsertedObjectsKey];
 	NSArray *updated = [notification.userInfo objectForKey:NSUpdatedObjectsKey];
 	NSArray *deleted = [notification.userInfo objectForKey:NSDeletedObjectsKey];
+	//	is there anything to merge?
 	if ([inserted count] == 0 && [updated count] == 0 && [deleted count] == 0) return;
 
-	[self.managedObjectContext performSelectorOnMainThread:@selector(mergeChangesFromContextDidSaveNotification:)
-												withObject:notification
-											 waitUntilDone:YES];
-}
+	NSManagedObjectContext *savedContext = [notification object];
 
+	// ignore change notifications from the main MOC
+	if ([self.mainManagedObjectContext isEqual:savedContext]) {
+		return;
+	}
+
+	// ignore change notifications from the direct child MOC. this will happen automatically
+	if ([self.mainManagedObjectContext isEqual:savedContext.parentContext]) {
+		return;
+	}
+
+	// ignore stuff from unknown PSCs
+	if (![savedContext.persistentStoreCoordinator isEqual:self.mainPSC] && ![savedContext.persistentStoreCoordinator isEqual:self.writerPSC]) {
+		return;
+	}
+
+	if (self.shouldMergeIncomingSavedObjects) {
+		[self.mainManagedObjectContext performBlock:^{
+			[self.mainManagedObjectContext mergeChangesFromContextDidSaveNotification:notification];
+		}];
+	} else {
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[[NSNotificationCenter defaultCenter] postNotificationName:RTCoreDataManagerDidMergeNotification object:self];
+		});
+	}
+}
 
 
 
 #pragma mark - Public
 
-//	this creates private MOC, directly attached to PSC
-//	use it for background imports
-//	its mergePolicy is set to favor items in memory versus those on disk, which means newly imported objects take precedence
+- (void)setMainMOCReadOnly:(BOOL)mainMOCReadOnly {
+
+	if (_mainMOCReadOnly == mainMOCReadOnly) return;
+	_mainMOCReadOnly = mainMOCReadOnly;
+
+	self.mainManagedObjectContext.mergePolicy = (mainMOCReadOnly) ? NSMergeByPropertyStoreTrumpMergePolicy : NSRollbackMergePolicy;
+}
+
 - (NSManagedObjectContext *)importerManagedObjectContext {
 
 	NSManagedObjectContext *moc = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
 	moc.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy;	//	this means that objects in the MOC will override those in the store
-	moc.persistentStoreCoordinator = self.privateContext.persistentStoreCoordinator;
+	moc.persistentStoreCoordinator = self.writerPSC;
 
 	return moc;
 }
 
-//	this creates private MOC, directly attached to PSC
-//	use it for temporary objects, since NSManagedObject does not have copy attribute
-//	its mergePolicy is set so that data on disk is never altered
 - (NSManagedObjectContext *)temporaryManagedObjectContext {
 
 	NSManagedObjectContext *moc = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
 	moc.mergePolicy = NSRollbackMergePolicy;	//	this means that any changes to the objects in the MOC will be discarded
-	moc.persistentStoreCoordinator = self.privateContext.persistentStoreCoordinator;
+	moc.persistentStoreCoordinator = self.mainPSC;
 
 	return moc;
 }
 
-//	this creates child MOC for the main MOC
-//	use it to create new objects to add into (say add new person into Address Book, new document etc)
-//	its mergePolicy is set to favor items in memory versus those on disk, which means newly created objects take precedence
 - (NSManagedObjectContext *)creatorManagedObjectContext {
+
+	NSAssert(!self.isMainMOCReadOnly, @"E | %@:%@/%@ Can't use creatorMOC when RTCoreDataManager.mainMOCReadOnly is set to YES. Set it temporary to NO, make your changes, save them using saveWithCallback: and revert to YES inside the callback block.", [self class], NSStringFromSelector(_cmd), @(__LINE__));
 
 	NSManagedObjectContext *moc = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
 	moc.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy;	//	this means that objects in this MOC will override those in the parent (main) MOC
-	moc.parentContext = self.managedObjectContext;
+	moc.parentContext = self.mainManagedObjectContext;
 
 	return moc;
 }
-
-- (void)saveMainContext {
-	if (![self.privateContext hasChanges] && ![self.managedObjectContext hasChanges]) {
-		NSLog(@"D | %@:%@/%@ Nothing to save in either main or private MOC", [self class], NSStringFromSelector(_cmd), @(__LINE__));
-		return;
-	}
-
-	[self.managedObjectContext saveWithCallback:^(BOOL success, NSError *error) {
-
-		if (!success || error) {
-			//	error during the save
-			NSLog(@"E | %@:%@/%@ Main/Private MOC save failed with error\n%@", [self class], NSStringFromSelector(_cmd), @(__LINE__), error);
-			return;
-		}
-
-		NSLog(@"D | %@:%@/%@ Main/Private MOC saved.", [self class], NSStringFromSelector(_cmd), @(__LINE__));
-	}];
-}
-
 
 @end

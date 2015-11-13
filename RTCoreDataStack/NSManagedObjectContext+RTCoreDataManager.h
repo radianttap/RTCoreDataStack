@@ -1,4 +1,10 @@
 /*
+ NSManagedObjectContext+RTCoreDataManager.h
+ Radiant Tap Essentials
+
+ Created by Aleksandar Vacić on 11.2.15.
+ Copyright (c) 2015. Radiant Tap. All rights reserved.
+
  Licensed under the MIT License
 
  Copyright (c) 2015 Aleksandar Vacić, RadiantTap.com
@@ -26,6 +32,11 @@
 
 @interface NSManagedObjectContext (RTCoreDataManager)
 
+/**
+ *	Use this to be informed when the save is entirely processed. Mostly useful when you have parentContext.
+ *
+ *	@param callback	Block to call once save is done, across this and all parent contexts
+ */
 - (void)saveWithCallback:(void(^)(BOOL success, NSError *error))callback;
 
 @end
