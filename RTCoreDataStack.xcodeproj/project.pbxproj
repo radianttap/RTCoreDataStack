@@ -14,6 +14,7 @@
 		D03AB3981B540D2E00FE1CF6 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D03AB3971B540D2E00FE1CF6 /* Images.xcassets */; };
 		D03AB3B31B540F4A00FE1CF6 /* RTCoreDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D03AB3B21B540F4A00FE1CF6 /* RTCoreDataManager.m */; };
 		D03AB3B71B54196700FE1CF6 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = D03AB3991B540D2E00FE1CF6 /* LaunchScreen.xib */; };
+		D09C7D7B1CB2D0B600FEFC99 /* NSManagedObjectContext+RTCoreDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D09C7D7A1CB2D0B600FEFC99 /* NSManagedObjectContext+RTCoreDataManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +30,8 @@
 		D03AB39A1B540D2E00FE1CF6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		D03AB3B11B540F4A00FE1CF6 /* RTCoreDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RTCoreDataManager.h; sourceTree = "<group>"; };
 		D03AB3B21B540F4A00FE1CF6 /* RTCoreDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RTCoreDataManager.m; sourceTree = "<group>"; };
+		D09C7D791CB2D0B600FEFC99 /* NSManagedObjectContext+RTCoreDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSManagedObjectContext+RTCoreDataManager.h"; sourceTree = "<group>"; };
+		D09C7D7A1CB2D0B600FEFC99 /* NSManagedObjectContext+RTCoreDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSManagedObjectContext+RTCoreDataManager.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,6 +89,8 @@
 		D03AB3B01B540EBD00FE1CF6 /* RTCoreDataStack */ = {
 			isa = PBXGroup;
 			children = (
+				D09C7D791CB2D0B600FEFC99 /* NSManagedObjectContext+RTCoreDataManager.h */,
+				D09C7D7A1CB2D0B600FEFC99 /* NSManagedObjectContext+RTCoreDataManager.m */,
 				D03AB3B11B540F4A00FE1CF6 /* RTCoreDataManager.h */,
 				D03AB3B21B540F4A00FE1CF6 /* RTCoreDataManager.m */,
 			);
@@ -166,6 +171,7 @@
 				D03AB3B31B540F4A00FE1CF6 /* RTCoreDataManager.m in Sources */,
 				D03AB38D1B540D2E00FE1CF6 /* AppDelegate.m in Sources */,
 				D03AB3931B540D2E00FE1CF6 /* ViewController.m in Sources */,
+				D09C7D7B1CB2D0B600FEFC99 /* NSManagedObjectContext+RTCoreDataManager.m in Sources */,
 				D03AB38A1B540D2E00FE1CF6 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
