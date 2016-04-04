@@ -93,7 +93,7 @@ NSString *const RTCoreDataManagerDidMergeNotification = @"RTCoreDataManagerDidMe
 	[self commonInit];
 }
 
-- (void)setupWithDataModelNamed:(NSString *)dataModelName storeURL:(NSURL *)storeURL callback:(InitCallbackBlock)callback {
+- (void)setupWithDataModelNamed:(nullable NSString *)dataModelName storeURL:(NSURL *)storeURL callback:(InitCallbackBlock)callback {
 
 	_initCallback = callback;
 
@@ -137,9 +137,8 @@ NSString *const RTCoreDataManagerDidMergeNotification = @"RTCoreDataManagerDidMe
 	return [self initWithDataModelNamed:dataModelName storeURL:storeURL callback:callback];
 }
 
-- (instancetype)initWithDataModelNamed:(NSString *)dataModelName storeURL:(NSURL *)storeURL callback:(InitCallbackBlock)callback {
+- (instancetype)initWithDataModelNamed:(nullable NSString *)dataModelName storeURL:(NSURL *)storeURL callback:(InitCallbackBlock)callback {
 
-	NSAssert([dataModelName length] > 0, @"E | %@:%@/%@ Data Model name not suppilied", [self class], NSStringFromSelector(_cmd), @(__LINE__));
 	if (!(self = [super init])) return nil;
 
 	_initCallback = callback;

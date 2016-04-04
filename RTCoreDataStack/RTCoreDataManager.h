@@ -89,7 +89,7 @@ NS_CLASS_AVAILABLE(10_7, 7_0)
  *	@param storeURL
  *	@param callback	A block to call once setup is completed. RTCoreDataManager.isReady is set to YES before callback is executed.
  */
-- (void)setupWithDataModelNamed:(NSString *)dataModelName storeURL:(NSURL *)storeURL callback:(InitCallbackBlock)callback;
+- (void)setupWithDataModelNamed:(nullable NSString *)dataModelName storeURL:(NSURL *)storeURL callback:(InitCallbackBlock)callback;
 
 //	## init scenario 2: no singleton, but locally retained object
 
@@ -134,7 +134,7 @@ NS_CLASS_AVAILABLE(10_7, 7_0)
  *
  *	@return A fully setup instance of RTCoreDataManager, with isReady=YES
  */
-- (instancetype)initWithDataModelNamed:(NSString *)dataModelName storeURL:(NSURL *)storeURL callback:(InitCallbackBlock)callback;
+- (instancetype)initWithDataModelNamed:(nullable NSString *)dataModelName storeURL:(NSURL *)storeURL callback:(InitCallbackBlock)callback;
 
 
 
