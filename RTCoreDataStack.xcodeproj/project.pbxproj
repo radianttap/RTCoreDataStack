@@ -69,8 +69,6 @@
 				D03AB38C1B540D2E00FE1CF6 /* AppDelegate.m */,
 				D03AB3911B540D2E00FE1CF6 /* ViewController.h */,
 				D03AB3921B540D2E00FE1CF6 /* ViewController.m */,
-				D03AB3971B540D2E00FE1CF6 /* Images.xcassets */,
-				D03AB3991B540D2E00FE1CF6 /* LaunchScreen.xib */,
 				D03AB38E1B540D2E00FE1CF6 /* Core_Data_Stack_Demo.xcdatamodeld */,
 				D03AB3871B540D2E00FE1CF6 /* Supporting Files */,
 			);
@@ -80,6 +78,8 @@
 		D03AB3871B540D2E00FE1CF6 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				D03AB3971B540D2E00FE1CF6 /* Images.xcassets */,
+				D03AB3991B540D2E00FE1CF6 /* LaunchScreen.xib */,
 				D03AB3881B540D2E00FE1CF6 /* Info.plist */,
 				D03AB3891B540D2E00FE1CF6 /* main.m */,
 			);
