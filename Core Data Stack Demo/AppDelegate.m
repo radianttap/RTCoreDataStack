@@ -20,18 +20,18 @@
 
 - (BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 
-	//	start this process as early as possible
-	self.coreDataManager = [[RTCoreDataManager alloc] initWithCallback:^{
-		[self processCoreDataCallback];
-	}];
-
-
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	self.window.backgroundColor = [UIColor whiteColor];
 
+	//	dummy VC, to show while the CDM is being prepared
 	ViewController *vc = [[ViewController alloc] init];
 	UINavigationController *nc = [[UINavigationController alloc] initWithRootViewController:vc];
 	self.window.rootViewController = nc;
+
+	//	bring CDM up
+	self.coreDataManager = [[RTCoreDataManager alloc] initWithCallback:^{
+		[self processCoreDataCallback];
+	}];
 
 	return YES;
 }
@@ -45,17 +45,14 @@
 
 - (void)applicationWillResignActive:(UIApplication *)application {
 
-	[self.coreDataManager save];
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
 
-	[self.coreDataManager save];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
 
-	[self.coreDataManager save];
 }
 
 #pragma mark - Core Data callbacks
