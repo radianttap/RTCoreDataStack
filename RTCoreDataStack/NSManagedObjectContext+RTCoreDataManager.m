@@ -46,7 +46,10 @@
 	}
 
 	if (self.concurrencyType == NSPrivateQueueConcurrencyType) {
+		//	this is SYNC call, so can only be used on background thread.
+		//	if used on main thread, it will lock up your app
 
+		//	why use this here? to prevent "optimistic locking failure" error if you have multiple concurrent background saves
 		[self performBlockAndWait:^{
 			NSError *error = nil;
 
@@ -69,9 +72,8 @@
 
 	} else {
 		//	performBlockAndWait: is a sync call and should not be used on main thread
-		//	so falling back to async call
+		//	so falling back to async call if on main thread
 		//	(same goes for older thread confinement MOC, which you should not be using anw)
-
 		[self performBlock:^{
 			NSError *error = nil;
 
