@@ -1,3 +1,10 @@
+---
+> Note: this is abandoned. 
+> It should still work just fine in Objective-C projects, but I don't plan to use nor maintain it anymore.
+>
+> Checkout its Swift sibling: [RTSwiftCoreDataStack](https://github.com/radianttap/RTSwiftCoreDataStack)
+---
+
 # RTCoreDataStack
 
 Core Data stack I use in all my modern iOS apps
